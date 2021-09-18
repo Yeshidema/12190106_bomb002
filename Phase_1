@@ -1,11 +1,175 @@
-0000000000400e8d <phase_1>:
-  400e8d:       48 83 ec 08             sub    $0x8,%rsp
-  400e91:       be cc 23 40 00          mov    $0x4023cc,%esi
-  400e96:       e8 9e 04 00 00          callq  401339 <strings_not_equal>
-  400e9b:       85 c0                   test   %eax,%eax
-  400e9d:       74 05                   je     400ea4 <phase_1+0x17>
-  400e9f:       e8 94 05 00 00          callq  401438 <explode_bomb>
-  400ea4:       48 83 c4 08             add    $0x8,%rsp
-  400ea8:       c3                      retq
+1. Set up break point:
+(gdb) break phase_1
+Breakpoint 1 at 0x400e8d
+
+(gdb) run
+Starting program: /mnt/c/Users/user/Downloads/bomb002/bomb
+Welcome to my fiendish little bomb. You have 6 phases with
+which to blow yourself up. Have a nice day!
+testing
+
+(gdb)disas //disassemble phase_1
+
+Dump of assembler code for function phase_1:
+=> 0x0000000000400e8d <+0>:     sub    $0x8,%rsp //building stack with 8 bytes
+   0x0000000000400e91 <+4>:     mov    $0x4023cc,%esi //something is being moved from 0x4023cc to %esi
+   0x0000000000400e96 <+9>:     callq  0x401339 <strings_not_equal>  //calls function string not equal
+   0x0000000000400e9b <+14>:    test   %eax,%eax
+   0x0000000000400e9d <+16>:    je     0x400ea4 <phase_1+23>
+   0x0000000000400e9f <+18>:    callq  0x401438 <explode_bomb>
+   0x0000000000400ea4 <+23>:    add    $0x8,%rsp
+   0x0000000000400ea8 <+27>:    retq
+End of assembler dump.
+
+looking at the second line we can see that something is being moved there, so to check the value that is being moved:
+ (gdb) x/s 0x4023cc
+0x4023cc:       "Public speaking is very easy."
+So this line is being moved and this string will be passes in to <strings_not_equal> and the it will be compared with our input
+
+To check whats going on inside <strings_not_equal>
+(gdb) ni 2 //'ni'to go to next line,2 means it will skip one more line
+0x0000000000400e96 in phase_1 ()
+(gdb) disas
+Dump of assembler code for function phase_1:
+   0x0000000000400e8d <+0>:     sub    $0x8,%rsp
+   0x0000000000400e91 <+4>:     mov    $0x4023cc,%esi
+=> 0x0000000000400e96 <+9>:     callq  0x401339 <strings_not_equal>
+   0x0000000000400e9b <+14>:    test   %eax,%eax
+   0x0000000000400e9d <+16>:    je     0x400ea4 <phase_1+23>
+   0x0000000000400e9f <+18>:    callq  0x401438 <explode_bomb>
+   0x0000000000400ea4 <+23>:    add    $0x8,%rsp
+   0x0000000000400ea8 <+27>:    retq
+End of assembler dump.
+(gdb) si //to get in inside the function
+0x0000000000401339 in strings_not_equal ()
+(gdb) disas
+Dump of assembler code for function strings_not_equal:
+=> 0x0000000000401339 <+0>:     push   %r12
+   0x000000000040133b <+2>:     push   %rbp
+   0x000000000040133c <+3>:     push   %rbx
+   0x000000000040133d <+4>:     mov    %rdi,%rbx
+   0x0000000000401340 <+7>:     mov    %rsi,%rbp
+   0x0000000000401343 <+10>:    callq  0x40131b <string_length>
+   0x0000000000401348 <+15>:    mov    %eax,%r12d
+   0x000000000040134b <+18>:    mov    %rbp,%rdi
+   0x000000000040134e <+21>:    callq  0x40131b <string_length>
+   0x0000000000401353 <+26>:    mov    $0x1,%edx
+   0x0000000000401358 <+31>:    cmp    %eax,%r12d
+   0x000000000040135b <+34>:    jne    0x401399 <strings_not_equal+96>
+   0x000000000040135d <+36>:    movzbl (%rbx),%eax
+   0x0000000000401360 <+39>:    test   %al,%al
+   0x0000000000401362 <+41>:    je     0x401386 <strings_not_equal+77>
+   0x0000000000401364 <+43>:    cmp    0x0(%rbp),%al
+   0x0000000000401367 <+46>:    je     0x401370 <strings_not_equal+55>
+   0x0000000000401369 <+48>:    jmp    0x40138d <strings_not_equal+84>
+   0x000000000040136b <+50>:    cmp    0x0(%rbp),%al
+   0x000000000040136e <+53>:    jne    0x401394 <strings_not_equal+91>
+   0x0000000000401370 <+55>:    add    $0x1,%rbx
+   0x0000000000401374 <+59>:    add    $0x1,%rbp
+   0x0000000000401378 <+63>:    movzbl (%rbx),%eax
+   0x000000000040137b <+66>:    test   %al,%al
+   0x000000000040137d <+68>:    jne    0x40136b <strings_not_equal+50>
+   0x000000000040137f <+70>:    mov    $0x0,%edx
+   0x0000000000401384 <+75>:    jmp    0x401399 <strings_not_equal+96>
+   0x0000000000401386 <+77>:    mov    $0x0,%edx
+   0x000000000040138b <+82>:    jmp    0x401399 <strings_not_equal+96>
+   0x000000000040138d <+84>:    mov    $0x1,%edx
+   0x0000000000401392 <+89>:    jmp    0x401399 <strings_not_equal+96>
+   0x0000000000401394 <+91>:    mov    $0x1,%edx
+   0x0000000000401399 <+96>:    mov    %edx,%eax
+   0x000000000040139b <+98>:    pop    %rbx
+   0x000000000040139c <+99>:    pop    %rbp
+   0x000000000040139d <+100>:   pop    %r12
+   0x000000000040139f <+102>:   retq
+End of assembler dump.
+Moving on the next line:
+(gdb) disas
+Dump of assembler code for function phase_1:
+   0x0000000000400e8d <+0>:     sub    $0x8,%rsp
+   0x0000000000400e91 <+4>:     mov    $0x4023cc,%esi
+   0x0000000000400e96 <+9>:     callq  0x401339 <strings_not_equal>
+=> 0x0000000000400e9b <+14>:    test   %eax,%eax //if eax is equal to 0, then it will jump <explode_bomb> or else it will call <explode_bomb>
+   0x0000000000400e9d <+16>:    je     0x400ea4 <phase_1+23>
+   0x0000000000400e9f <+18>:    callq  0x401438 <explode_bomb>
+   0x0000000000400ea4 <+23>:    add    $0x8,%rsp
+   0x0000000000400ea8 <+27>:    retq
+End of assembler dump.
+
+Initially our input was "testing", lets check the information stored in the registers:
+(gdb) i r
+rax            0x1                 1 //since 1 and 1 will not give back 0, it will call <explode_bomb>
+rbx            0x4021f0            4202992
+rcx            0x4                 4
+rdx            0x1                 1
+rsi            0x4023cc            4203468
+rdi            0x4023e9            4203497
+rbp            0x0                 0x0
+rsp            0x7ffffffee310      0x7ffffffee310
+r8             0x6037a0            6305696
+r9             0x7c                124
+r10            0xfffffffffffff6ed  -2323
+r11            0x7fffff5e7400      140737477768192
+r12            0x400c60            4197472
+r13            0x7ffffffee410      140737488282640
+r14            0x0                 0
+r15            0x0                 0
+rip            0x400e9b            0x400e9b <phase_1+14>
+eflags         0x297               [ CF PF AF SF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+
+when we enter the string that we found in 0x4023cc 'Public speaking is very easy.':
+(gdb) i r
+rax            0x0                 0 //it it equal to zero, so it will not call <explode_bomb>
+rbx            0x4021f0            4202992
+rcx            0x1d                29
+rdx            0x0                 0
+rsi            0x4023cc            4203468
+rdi            0x4023e9            4203497
+rbp            0x0                 0x0
+rsp            0x7ffffffee310      0x7ffffffee310
+r8             0x6037a0            6305696
+r9             0x7c                124
+r10            0xfffffffffffff6ed  -2323
+r11            0x7fffff5e7400      140737477768192
+r12            0x400c60            4197472
+r13            0x7ffffffee410      140737488282640
+r14            0x0                 0
+r15            0x0                 0
+rip            0x400e9b            0x400e9b <phase_1+14>
+eflags         0x246               [ PF ZF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb)
+
+so 'Public speaking is very easy.'is a correct answer to phase 1 since it doesn't call <explode_bomb>.
+
+(gdb) run
+Starting program: /mnt/c/Users/user/Downloads/bomb002/bomb
+Welcome to my fiendish little bomb. You have 6 phases with
+which to blow yourself up. Have a nice day!
+Public speaking is very easy.
+Phase 1 defused. How about the next one?
+
+
+
+
+
+
+
+
+
+
+
+
+
   
   
