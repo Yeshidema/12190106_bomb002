@@ -1,0 +1,131 @@
+The code for Phase 2 is:
+
+0000000000400ea9 <phase_2>:
+  400ea9:       55                      push   %rbp
+  400eaa:       53                      push   %rbx
+  400eab:       48 83 ec 28             sub    $0x28,%rsp
+  400eaf:       64 48 8b 04 25 28 00    mov    %fs:0x28,%rax
+  400eb6:       00 00
+  400eb8:       48 89 44 24 18          mov    %rax,0x18(%rsp)
+  400ebd:       31 c0                   xor    %eax,%eax
+  400ebf:       48 89 e6                mov    %rsp,%rsi
+  400ec2:       e8 93 05 00 00          callq  40145a <read_six_numbers> //with this line we know that the input should be six integers
+  400ec7:       83 3c 24 01             cmpl   $0x1,(%rsp)
+  400ecb:       74 05                   je     400ed2 <phase_2+0x29>
+  400ecd:       e8 66 05 00 00          callq  401438 <explode_bomb>
+  400ed2:       48 89 e3                mov    %rsp,%rbx
+  400ed5:       48 8d 6c 24 14          lea    0x14(%rsp),%rbp
+  400eda:       8b 03                   mov    (%rbx),%eax
+  400edc:       01 c0                   add    %eax,%eax
+  400ede:       39 43 04                cmp    %eax,0x4(%rbx) //we are comparing something here
+  400ee1:       74 05                   je     400ee8 <phase_2+0x3f>
+  400ee3:       e8 50 05 00 00          callq  401438 <explode_bomb>
+  400ee8:       48 83 c3 04             add    $0x4,%rbx
+  400eec:       48 39 eb                cmp    %rbp,%rbx   //something is being compared here again
+  400eef:       75 e9                   jne    400eda <phase_2+0x31>
+  400ef1:       48 8b 44 24 18          mov    0x18(%rsp),%rax
+  400ef6:       64 48 33 04 25 28 00    xor    %fs:0x28,%rax
+  400efd:       00 00
+  400eff:       74 05                   je     400f06 <phase_2+0x5d>
+  400f01:       e8 fa fb ff ff          callq  400b00 <__stack_chk_fail@plt>
+  400f06:       48 83 c4 28             add    $0x28,%rsp  //closing the stack frame
+  400f0a:       5b                      pop    %rbx
+  400f0b:       5d                      pop    %rbp
+  400f0c:       c3                      retq
+  
+  Set the breakpoint at phase_2 and take the first input as '1 2 3 4 5 6' since we know that it should be 6 integers.
+  Getting into <read_six_numbers>:
+  Dump of assembler code for function read_six_numbers:
+=> 0x000000000040145a <+0>:     sub    $0x8,%rsp
+   0x000000000040145e <+4>:     mov    %rsi,%rdx //our input is in %rdx
+   0x0000000000401461 <+7>:     lea    0x4(%rsi),%rcx
+   0x0000000000401465 <+11>:    lea    0x14(%rsi),%rax
+   0x0000000000401469 <+15>:    push   %rax
+   0x000000000040146a <+16>:    lea    0x10(%rsi),%rax
+   0x000000000040146e <+20>:    push   %rax
+   0x000000000040146f <+21>:    lea    0xc(%rsi),%r9
+   0x0000000000401473 <+25>:    lea    0x8(%rsi),%r8
+   0x0000000000401477 <+29>:    mov    $0x4025ab,%esi //0x4025ab is being moved into %esi
+   0x000000000040147c <+34>:    mov    $0x0,%eax
+   0x0000000000401481 <+39>:    callq  0x400bb0 <__isoc99_sscanf@plt>
+   0x0000000000401486 <+44>:    add    $0x10,%rsp
+   0x000000000040148a <+48>:    cmp    $0x5,%eax //if %eax is greater then 5, it will pass <explode_bomb>
+   0x000000000040148d <+51>:    jg     0x401494 <read_six_numbers+58>
+   0x000000000040148f <+53>:    callq  0x401438 <explode_bomb>
+   0x0000000000401494 <+58>:    add    $0x8,%rsp
+   0x0000000000401498 <+62>:    retq
+End of assembler dump.
+
+To check what is being moved from 0x4025ab:
+(gdb) x/s 0x4025ab
+0x4025ab:       "%d %d %d %d %d %d" //it is the format for our answer, six integer with spaces between them.
+
+To see the information stored in register "cmp    %eax,0x4(%rbx)":
+Dump of assembler code for function phase_2:
+   0x0000000000400ea9 <+0>:     push   %rbp
+   0x0000000000400eaa <+1>:     push   %rbx
+   0x0000000000400eab <+2>:     sub    $0x28,%rsp
+   0x0000000000400eaf <+6>:     mov    %fs:0x28,%rax
+   0x0000000000400eb8 <+15>:    mov    %rax,0x18(%rsp)
+   0x0000000000400ebd <+20>:    xor    %eax,%eax
+   0x0000000000400ebf <+22>:    mov    %rsp,%rsi
+   0x0000000000400ec2 <+25>:    callq  0x40145a <read_six_numbers>
+   0x0000000000400ec7 <+30>:    cmpl   $0x1,(%rsp)
+   0x0000000000400ecb <+34>:    je     0x400ed2 <phase_2+41>
+   0x0000000000400ecd <+36>:    callq  0x401438 <explode_bomb>
+   0x0000000000400ed2 <+41>:    mov    %rsp,%rbx
+   0x0000000000400ed5 <+44>:    lea    0x14(%rsp),%rbp
+   0x0000000000400eda <+49>:    mov    (%rbx),%eax
+   0x0000000000400edc <+51>:    add    %eax,%eax
+=> 0x0000000000400ede <+53>:    cmp    %eax,0x4(%rbx)
+   0x0000000000400ee1 <+56>:    je     0x400ee8 <phase_2+63>
+   0x0000000000400ee3 <+58>:    callq  0x401438 <explode_bomb>
+   0x0000000000400ee8 <+63>:    add    $0x4,%rbx
+   0x0000000000400eec <+67>:    cmp    %rbp,%rbx
+   0x0000000000400eef <+70>:    jne    0x400eda <phase_2+49>
+   0x0000000000400ef1 <+72>:    mov    0x18(%rsp),%rax
+   0x0000000000400ef6 <+77>:    xor    %fs:0x28,%rax
+   0x0000000000400eff <+86>:    je     0x400f06 <phase_2+93>
+   0x0000000000400f01 <+88>:    callq  0x400b00 <__stack_chk_fail@plt>
+   0x0000000000400f06 <+93>:    add    $0x28,%rsp
+   0x0000000000400f0a <+97>:    pop    %rbx
+   0x0000000000400f0b <+98>:    pop    %rbp
+   0x0000000000400f0c <+99>:    retq
+End of assembler dump.
+(gdb) i r
+rax            0x2                 2
+rbx            0x7ffffffee2e0      140737488282336  
+rcx            0x0                 0
+rdx            0x7ffffffee2f4      140737488282356
+rsi            0x0                 0
+rdi            0x7ffffffedc70      140737488280688
+rbp            0x7ffffffee2f4      0x7ffffffee2f4
+rsp            0x7ffffffee2e0      0x7ffffffee2e0
+r8             0xffffffff          4294967295
+r9             0x0                 0
+r10            0x7fffff74eac0      140737479240384
+r11            0x0                 0
+r12            0x400c60            4197472
+r13            0x7ffffffee410      140737488282640
+r14            0x0                 0
+r15            0x0                 0
+rip            0x400ede            0x400ede <phase_2+53>
+eflags         0x202               [ IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) 
+
+To see whats stored in "0x4(%rbx)":
+ x/d $rbx+4
+0x7ffffffee2e4: 2
+Since rax and rbx is equal that is 2, it will pass over <explode_bomb>
+
+
+
+
+
+  
