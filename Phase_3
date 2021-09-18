@@ -1,0 +1,54 @@
+0000000000400f0d <phase_3>:
+  400f0d:       48 83 ec 18             sub    $0x18,%rsp
+  400f11:       64 48 8b 04 25 28 00    mov    %fs:0x28,%rax
+  400f18:       00 00
+  400f1a:       48 89 44 24 08          mov    %rax,0x8(%rsp)
+  400f1f:       31 c0                   xor    %eax,%eax
+  400f21:       48 8d 4c 24 04          lea    0x4(%rsp),%rcx
+  400f26:       48 89 e2                mov    %rsp,%rdx
+  400f29:       be b7 25 40 00          mov    $0x4025b7,%esi
+  400f2e:       e8 7d fc ff ff          callq  400bb0 <__isoc99_sscanf@plt>
+  400f33:       83 f8 01                cmp    $0x1,%eax
+  400f36:       7f 05                   jg     400f3d <phase_3+0x30>
+  400f38:       e8 fb 04 00 00          callq  401438 <explode_bomb>
+  400f3d:       83 3c 24 07             cmpl   $0x7,(%rsp)
+  400f41:       77 5b                   ja     400f9e <phase_3+0x91>
+  400f43:       8b 04 24                mov    (%rsp),%eax
+  400f46:       ff 24 c5 00 24 40 00    jmpq   *0x402400(,%rax,8)
+  400f4d:       b8 80 03 00 00          mov    $0x380,%eax
+  400f52:       eb 05                   jmp    400f59 <phase_3+0x4c>
+  400f54:       b8 00 00 00 00          mov    $0x0,%eax
+  400f59:       2d e4 03 00 00          sub    $0x3e4,%eax
+  400f5e:       eb 05                   jmp    400f65 <phase_3+0x58>
+  400f60:       b8 00 00 00 00          mov    $0x0,%eax
+  400f65:       05 1e 02 00 00          add    $0x21e,%eax
+  400f6a:       eb 05                   jmp    400f71 <phase_3+0x64>
+  400f6c:       b8 00 00 00 00          mov    $0x0,%eax
+  400f71:       83 e8 34                sub    $0x34,%eax
+  400f74:       eb 05                   jmp    400f7b <phase_3+0x6e>
+  400f76:       b8 00 00 00 00          mov    $0x0,%eax
+  400f7b:       83 c0 34                add    $0x34,%eax
+  400f7e:       eb 05                   jmp    400f85 <phase_3+0x78>
+  400f80:       b8 00 00 00 00          mov    $0x0,%eax
+  400f85:       83 e8 34                sub    $0x34,%eax
+  400f88:       eb 05                   jmp    400f8f <phase_3+0x82>
+  400f8a:       b8 00 00 00 00          mov    $0x0,%eax
+  400f8f:       83 c0 34                add    $0x34,%eax
+  400f92:       eb 05                   jmp    400f99 <phase_3+0x8c>
+  400f94:       b8 00 00 00 00          mov    $0x0,%eax
+  400f99:       83 e8 34                sub    $0x34,%eax
+  400f9c:       eb 0a                   jmp    400fa8 <phase_3+0x9b>
+   400f9e:       e8 95 04 00 00          callq  401438 <explode_bomb>
+  400fa3:       b8 00 00 00 00          mov    $0x0,%eax
+  400fa8:       83 3c 24 05             cmpl   $0x5,(%rsp)
+  400fac:       7f 06                   jg     400fb4 <phase_3+0xa7>
+  400fae:       3b 44 24 04             cmp    0x4(%rsp),%eax
+  400fb2:       74 05                   je     400fb9 <phase_3+0xac>
+  400fb4:       e8 7f 04 00 00          callq  401438 <explode_bomb>
+  400fb9:       48 8b 44 24 08          mov    0x8(%rsp),%rax
+  400fbe:       64 48 33 04 25 28 00    xor    %fs:0x28,%rax
+  400fc5:       00 00
+  400fc7:       74 05                   je     400fce <phase_3+0xc1>
+  400fc9:       e8 32 fb ff ff          callq  400b00 <__stack_chk_fail@plt>
+  400fce:       48 83 c4 18             add    $0x18,%rsp
+  400fd2:       c3                      retq
