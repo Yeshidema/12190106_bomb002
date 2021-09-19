@@ -183,12 +183,6 @@ Phase 1 defused. How about the next one?
 1 2 4 8 16 32
 That's number 2.  Keep going!
 3 4294967244
-
-Breakpoint 1, 0x0000000000400f0d in phase_3 ()
-(gdb) next
-Single stepping until exit from function phase_3,
-which has no line number information.
-main (argc=<optimized out>, argv=<optimized out>) at bomb.c:90
-90          phase_defused();
+Halfway there!
 
 
