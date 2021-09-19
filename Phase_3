@@ -13,7 +13,7 @@
   400f38:       e8 fb 04 00 00          callq  401438 <explode_bomb>
   400f3d:       83 3c 24 07             cmpl   $0x7,(%rsp) //comparing 7 with the value in %rsp
   400f41:       77 5b                   ja     400f9e <phase_3+0x91> //jump if the value is above 7
-  400f43:       8b 04 24                mov    (%rsp),%eax
+  400f43:       8b 04 24                mov    (%rsp),%eax  //moved rsp to eax
   400f46:       ff 24 c5 00 24 40 00    jmpq   *0x402400(,%rax,8)
   400f4d:       b8 80 03 00 00          mov    $0x380,%eax
   400f52:       eb 05                   jmp    400f59 <phase_3+0x4c>
@@ -58,7 +58,137 @@
   (gdb) x/s 0x4025b7
 0x4025b7:       "%d %d"
 
-Also to see whats in "cmpl   $0x7,(%rsp)"
-(gdb) x/d $rsp
-0x7ffffffee308: 45 
-We see that %rsp hold our first digit.
+Here "$0x1,%eax", 1 is being compared to %eax, so to see what is in %eax:
+Dump of assembler code for function phase_3:
+   0x0000000000400f0d <+0>:     sub    $0x18,%rsp
+   0x0000000000400f11 <+4>:     mov    %fs:0x28,%rax
+   0x0000000000400f1a <+13>:    mov    %rax,0x8(%rsp)
+   0x0000000000400f1f <+18>:    xor    %eax,%eax
+   0x0000000000400f21 <+20>:    lea    0x4(%rsp),%rcx
+   0x0000000000400f26 <+25>:    mov    %rsp,%rdx
+   0x0000000000400f29 <+28>:    mov    $0x4025b7,%esi
+   0x0000000000400f2e <+33>:    callq  0x400bb0 <__isoc99_sscanf@plt>
+=> 0x0000000000400f33 <+38>:    cmp    $0x1,%eax
+   0x0000000000400f36 <+41>:    jg     0x400f3d <phase_3+48>
+   0x0000000000400f38 <+43>:    callq  0x401438 <explode_bomb>
+   0x0000000000400f3d <+48>:    cmpl   $0x7,(%rsp)
+   
+   (gdb) i r
+rax            0x2                 2  //this 2 is being compared to the value 1
+rbx            0x4021f0            4202992
+rcx            0x0                 0
+rdx            0x7ffffffee314      140737488282388
+rsi            0x0                 0
+rdi            0x7ffffffedcc0      140737488280768
+rbp            0x0                 0x0
+rsp            0x7ffffffee310      0x7ffffffee310
+r8             0xffffffff          4294967295
+r9             0x0                 0
+r10            0x7fffff74eac0      140737479240384
+r11            0x0                 0
+r12            0x400c60            4197472
+r13            0x7ffffffee420      140737488282656
+r14            0x0                 0
+r15            0x0                 0
+rip            0x400f33            0x400f33 <phase_3+38>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+   
+
+and also we see that in "cmpl   $0x7,(%rsp)", 7 is being compared to %rsp, to see whats in %rsp:
+(gdb) i r
+rax            0x2                 2
+rbx            0x4021f0            4202992
+rcx            0x0                 0
+rdx            0x7ffffffee314      140737488282388
+rsi            0x0                 0
+rdi            0x7ffffffedcc0      140737488280768
+rbp            0x0                 0x0
+rsp            0x7ffffffee310      0x7ffffffee310 //this is the address of %rsp
+r8             0xffffffff          4294967295
+r9             0x0                 0
+r10            0x7fffff74eac0      140737479240384
+r11            0x0                 0
+r12            0x400c60            4197472
+r13            0x7ffffffee420      140737488282656
+r14            0x0                 0
+r15            0x0                 0
+rip            0x400f33            0x400f33 <phase_3+38>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x/1xd 0x7ffffffee310
+0x7ffffffee310: 3 //this is the first value, since it is less that 7, it will not call <explode_bomb>
+
+
+-Type <RET> for more, q to quit, c to continue without paging--
+   0x0000000000400f9e <+145>:   callq  0x401438 <explode_bomb>
+   0x0000000000400fa3 <+150>:   mov    $0x0,%eax
+   0x0000000000400fa8 <+155>:   cmpl   $0x5,(%rsp)
+   0x0000000000400fac <+159>:   jg     0x400fb4 <phase_3+167>
+   0x0000000000400fae <+161>:   cmp    0x4(%rsp),%eax //we see here that %rsp is compared with %eax, to see whats in %eax
+=> 0x0000000000400fb2 <+165>:   je     0x400fb9 <phase_3+172>
+   0x0000000000400fb4 <+167>:   callq  0x401438 <explode_bomb>
+   0x0000000000400fb9 <+172>:   mov    0x8(%rsp),%rax
+   0x0000000000400fbe <+177>:   xor    %fs:0x28,%rax
+   0x0000000000400fc7 <+186>:   je     0x400fce <phase_3+193>
+   0x0000000000400fc9 <+188>:   callq  0x400b00 <__stack_chk_fail@plt>
+   0x0000000000400fce <+193>:   add    $0x18,%rsp
+   0x0000000000400fd2 <+197>:   retq
+End of assembler dump.
+(gdb) i r
+rax            0xffffffcc          4294967244 //this is our second answer since %eax is same as %rax in 64 bit
+rbx            0x4021f0            4202992
+rcx            0x0                 0
+rdx            0x7ffffffee314      140737488282388
+rsi            0x0                 0
+rdi            0x7ffffffedcc0      140737488280768
+rbp            0x0                 0x0
+rsp            0x7ffffffee310      0x7ffffffee310
+r8             0xffffffff          4294967295
+r9             0x0                 0
+r10            0x7fffff74eac0      140737479240384
+r11            0x0                 0
+r12            0x400c60            4197472
+r13            0x7ffffffee420      140737488282656
+r14            0x0                 0
+r15            0x0                 0
+rip            0x400fb2            0x400fb2 <phase_3+165>
+eflags         0x246               [ PF ZF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+
+So, First integer = 3
+second integer = 4294967244
+
+(gdb) run
+Starting program: /mnt/c/Users/user/Downloads/bomb002/bomb
+Welcome to my fiendish little bomb. You have 6 phases with
+which to blow yourself up. Have a nice day!
+Public speaking is very easy.
+Phase 1 defused. How about the next one?
+1 2 4 8 16 32
+That's number 2.  Keep going!
+3 4294967244
+
+Breakpoint 1, 0x0000000000400f0d in phase_3 ()
+(gdb) next
+Single stepping until exit from function phase_3,
+which has no line number information.
+main (argc=<optimized out>, argv=<optimized out>) at bomb.c:90
+90          phase_defused();
+
+
