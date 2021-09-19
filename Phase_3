@@ -56,7 +56,7 @@
   
   To see what in "0x4025b7":
   (gdb) x/s 0x4025b7
-0x4025b7:       "%d %d"
+0x4025b7:       "%d %d" //With this we know that for phase 3, the input should be two integer.
 
 Here "$0x1,%eax", 1 is being compared to %eax, so to see what is in %eax:
 Dump of assembler code for function phase_3:
