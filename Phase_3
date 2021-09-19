@@ -6,13 +6,13 @@
   400f1f:       31 c0                   xor    %eax,%eax
   400f21:       48 8d 4c 24 04          lea    0x4(%rsp),%rcx
   400f26:       48 89 e2                mov    %rsp,%rdx
-  400f29:       be b7 25 40 00          mov    $0x4025b7,%esi
-  400f2e:       e8 7d fc ff ff          callq  400bb0 <__isoc99_sscanf@plt>
-  400f33:       83 f8 01                cmp    $0x1,%eax
-  400f36:       7f 05                   jg     400f3d <phase_3+0x30>
+  400f29:       be b7 25 40 00          mov    $0x4025b7,%esi //Something is being moved here
+  400f2e:       e8 7d fc ff ff          callq  400bb0 <__isoc99_sscanf@plt> //Function that takes inout
+  400f33:       83 f8 01                cmp    $0x1,%eax //Comparing 1 with the result from input
+  400f36:       7f 05                   jg     400f3d <phase_3+0x30> //if %eax > 1, jump pass the <explode_bomb>
   400f38:       e8 fb 04 00 00          callq  401438 <explode_bomb>
-  400f3d:       83 3c 24 07             cmpl   $0x7,(%rsp)
-  400f41:       77 5b                   ja     400f9e <phase_3+0x91>
+  400f3d:       83 3c 24 07             cmpl   $0x7,(%rsp) //comparing 7 with the value in %rsp
+  400f41:       77 5b                   ja     400f9e <phase_3+0x91> //jump if the value is above 7
   400f43:       8b 04 24                mov    (%rsp),%eax
   400f46:       ff 24 c5 00 24 40 00    jmpq   *0x402400(,%rax,8)
   400f4d:       b8 80 03 00 00          mov    $0x380,%eax
@@ -42,7 +42,7 @@
   400fa3:       b8 00 00 00 00          mov    $0x0,%eax
   400fa8:       83 3c 24 05             cmpl   $0x5,(%rsp)
   400fac:       7f 06                   jg     400fb4 <phase_3+0xa7>
-  400fae:       3b 44 24 04             cmp    0x4(%rsp),%eax
+  400fae:       3b 44 24 04             cmp    0x4(%rsp),%eax //compares $rsp+4 to $eax
   400fb2:       74 05                   je     400fb9 <phase_3+0xac>
   400fb4:       e8 7f 04 00 00          callq  401438 <explode_bomb>
   400fb9:       48 8b 44 24 08          mov    0x8(%rsp),%rax
@@ -52,3 +52,13 @@
   400fc9:       e8 32 fb ff ff          callq  400b00 <__stack_chk_fail@plt>
   400fce:       48 83 c4 18             add    $0x18,%rsp
   400fd2:       c3                      retq
+  
+  
+  To see what in "0x4025b7":
+  (gdb) x/s 0x4025b7
+0x4025b7:       "%d %d"
+
+Also to see whats in "cmpl   $0x7,(%rsp)"
+(gdb) x/d $rsp
+0x7ffffffee308: 45 
+We see that %rsp hold our first digit.
