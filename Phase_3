@@ -7,7 +7,7 @@
   400f21:       48 8d 4c 24 04          lea    0x4(%rsp),%rcx
   400f26:       48 89 e2                mov    %rsp,%rdx
   400f29:       be b7 25 40 00          mov    $0x4025b7,%esi //Something is being moved here
-  400f2e:       e8 7d fc ff ff          callq  400bb0 <__isoc99_sscanf@plt> //Function that takes inout
+  400f2e:       e8 7d fc ff ff          callq  400bb0 <__isoc99_sscanf@plt> //Function that takes input
   400f33:       83 f8 01                cmp    $0x1,%eax //Comparing 1 with the result from input
   400f36:       7f 05                   jg     400f3d <phase_3+0x30> //if %eax > 1, jump pass the <explode_bomb>
   400f38:       e8 fb 04 00 00          callq  401438 <explode_bomb>
