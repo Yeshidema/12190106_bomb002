@@ -58,6 +58,8 @@
   (gdb) x/s 0x4025b7
 0x4025b7:       "%d %d" //With this we know that for phase 3, the input should be two integer.
 
+Lets try keeping our input as " 5 8"
+
 Here "$0x1,%eax", 1 is being compared to %eax, so to see what is in %eax:
 Dump of assembler code for function phase_3:
    0x0000000000400f0d <+0>:     sub    $0x18,%rsp
@@ -74,24 +76,25 @@ Dump of assembler code for function phase_3:
    0x0000000000400f3d <+48>:    cmpl   $0x7,(%rsp)
    
    (gdb) i r
-rax            0x2                 2  //this 2 is being compared to the value 1
+(gdb) i r
+rax            0x2                 2 //this is being compared to value 1
 rbx            0x4021f0            4202992
 rcx            0x0                 0
-rdx            0x7ffffffee314      140737488282388
+rdx            0x7ffffffee304      140737488282372
 rsi            0x0                 0
-rdi            0x7ffffffedcc0      140737488280768
+rdi            0x7ffffffedcb0      140737488280752
 rbp            0x0                 0x0
-rsp            0x7ffffffee310      0x7ffffffee310
+rsp            0x7ffffffee300      0x7ffffffee300
 r8             0xffffffff          4294967295
 r9             0x0                 0
 r10            0x7fffff74eac0      140737479240384
 r11            0x0                 0
 r12            0x400c60            4197472
-r13            0x7ffffffee420      140737488282656
+r13            0x7ffffffee410      140737488282640
 r14            0x0                 0
 r15            0x0                 0
 rip            0x400f33            0x400f33 <phase_3+38>
-eflags         0x206               [ PF IF ]
+eflags         0x202               [ IF ]
 cs             0x33                51
 ss             0x2b                43
 ds             0x0                 0
@@ -105,29 +108,29 @@ and also we see that in "cmpl   $0x7,(%rsp)", 7 is being compared to %rsp, to se
 rax            0x2                 2
 rbx            0x4021f0            4202992
 rcx            0x0                 0
-rdx            0x7ffffffee314      140737488282388
+rdx            0x7ffffffee304      140737488282372
 rsi            0x0                 0
-rdi            0x7ffffffedcc0      140737488280768
+rdi            0x7ffffffedcb0      140737488280752
 rbp            0x0                 0x0
-rsp            0x7ffffffee310      0x7ffffffee310 //this is the address of %rsp
+rsp            0x7ffffffee300      0x7ffffffee300 //this is the address of %rsp
 r8             0xffffffff          4294967295
 r9             0x0                 0
 r10            0x7fffff74eac0      140737479240384
 r11            0x0                 0
 r12            0x400c60            4197472
-r13            0x7ffffffee420      140737488282656
+r13            0x7ffffffee410      140737488282640
 r14            0x0                 0
 r15            0x0                 0
 rip            0x400f33            0x400f33 <phase_3+38>
-eflags         0x206               [ PF IF ]
+eflags         0x202               [ IF ]
 cs             0x33                51
 ss             0x2b                43
 ds             0x0                 0
 es             0x0                 0
 fs             0x0                 0
 gs             0x0                 0
-(gdb) x/1xd 0x7ffffffee310
-0x7ffffffee310: 3 //this is the first value, since it is less that 7, it will not call <explode_bomb>
+(gdb) x/d 0x7ffffffee300
+0x7ffffffee300: 5 //this is the first value, since it is less that 7, it will not call <explode_bomb>
 
 
 -Type <RET> for more, q to quit, c to continue without paging--
@@ -146,24 +149,24 @@ gs             0x0                 0
    0x0000000000400fd2 <+197>:   retq
 End of assembler dump.
 (gdb) i r
-rax            0xffffffcc          4294967244 //this is our second answer since %eax is same as %rax in 64 bit
+rax            0xffffffcc          4294967244 //this is our digit
 rbx            0x4021f0            4202992
 rcx            0x0                 0
-rdx            0x7ffffffee314      140737488282388
+rdx            0x7ffffffee304      140737488282372
 rsi            0x0                 0
-rdi            0x7ffffffedcc0      140737488280768
+rdi            0x7ffffffedcb0      140737488280752
 rbp            0x0                 0x0
-rsp            0x7ffffffee310      0x7ffffffee310
+rsp            0x7ffffffee300      0x7ffffffee300
 r8             0xffffffff          4294967295
 r9             0x0                 0
 r10            0x7fffff74eac0      140737479240384
 r11            0x0                 0
 r12            0x400c60            4197472
-r13            0x7ffffffee420      140737488282656
+r13            0x7ffffffee410      140737488282640
 r14            0x0                 0
 r15            0x0                 0
 rip            0x400fb2            0x400fb2 <phase_3+165>
-eflags         0x246               [ PF ZF IF ]
+eflags         0x282               [ SF IF ]
 cs             0x33                51
 ss             0x2b                43
 ds             0x0                 0
@@ -171,18 +174,20 @@ es             0x0                 0
 fs             0x0                 0
 gs             0x0                 0
 
-So, First integer = 3
+So, First integer = 5
 second integer = 4294967244
 
 (gdb) run
 Starting program: /mnt/c/Users/user/Downloads/bomb002/bomb
 Welcome to my fiendish little bomb. You have 6 phases with
 which to blow yourself up. Have a nice day!
-Public speaking is very easy.
+Public speaking is very easy. //Phase_1
 Phase 1 defused. How about the next one?
-1 2 4 8 16 32
+1 2 4 8 16 32 //Phase_2
 That's number 2.  Keep going!
-3 4294967244
+5 4294967244 //Phase_3
 Halfway there!
+
+Note: As for phase 3, the first input can be any number between 1 to 7.
 
 
