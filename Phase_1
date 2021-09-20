@@ -1,3 +1,13 @@
+Overview:
+The binary bomb is a simple command line program with six phases that asks you to enter a particular secret string or integer or a cpde. 
+If you type the incorrect code, the program explodes by printing out "BOOM!!!" and terminating. If you enter the correct code, the program proceeds to the next phase, which expects 
+another code.
+The goal is to use a debugger to reverse engineer the executable in order to find the expected string for each phase
+and prevent the bomb from blowing up.
+The debugger i used for this program is "gdb" which allows you to see what is going on 'inside' another program while it executes or what another program was doing at the moment it crashed.
+
+Firstly to start diffusing phase 1, start debugging:
+
 1. Set up break point:
 (gdb) break phase_1
 Breakpoint 1 at 0x400e8d
