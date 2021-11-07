@@ -1,0 +1,54 @@
+The assembly code for Phase 4 is:
+
+000000000040100e <phase_4>:
+  40100e:       48 83 ec 18             sub    $0x18,%rsp   //makes the stack frame
+  401012:       64 48 8b 04 25 28 00    mov    %fs:0x28,%rax  //second input = %rax
+  401019:       00 00
+  40101b:       48 89 44 24 08          mov    %rax,0x8(%rsp) //first input = 0x8(%rsp)
+  401020:       31 c0                   xor    %eax,%eax
+  401022:       48 89 e1                mov    %rsp,%rcx
+  401025:       48 8d 54 24 04          lea    0x4(%rsp),%rdx
+  40102a:       be b7 25 40 00          mov    $0x4025b7,%esi   //format of the answer: %d %d
+  40102f:       e8 7c fb ff ff          callq  400bb0 <__isoc99_sscanf@plt>
+  401034:       83 f8 02                cmp    $0x2,%eax
+  401037:       75 0b                   jne    401044 <phase_4+0x36>
+  401039:       8b 04 24                mov    (%rsp),%eax
+  40103c:       83 e8 02                sub    $0x2,%eax
+  40103f:       83 f8 02                cmp    $0x2,%eax
+  401042:       76 05                   jbe    401049 <phase_4+0x3b>
+  401044:       e8 ef 03 00 00          callq  401438 <explode_bomb>
+  401049:       8b 34 24                mov    (%rsp),%esi
+  40104c:       bf 05 00 00 00          mov    $0x5,%edi
+  401051:       e8 7d ff ff ff          callq  400fd3 <func4>
+  401056:       3b 44 24 04             cmp    0x4(%rsp),%eax
+  40105a:       74 05                   je     401061 <phase_4+0x53>
+  40105c:       e8 d7 03 00 00          callq  401438 <explode_bomb>
+  401061:       48 8b 44 24 08          mov    0x8(%rsp),%rax
+  401066:       64 48 33 04 25 28 00    xor    %fs:0x28,%rax
+  40106d:       00 00
+  40106f:       74 05                   je     401076 <phase_4+0x68>
+  401071:       e8 8a fa ff ff          callq  400b00 <__stack_chk_fail@plt>
+  401076:       48 83 c4 18             add    $0x18,%rsp
+  40107a:       c3                      retq
+  
+  
+  Firstly as always set the break point at "phase_4" and run the program. Give the answers for the first three phases and when we reach to phase four lets give the sample input as
+ 1 and 3
+ 
+ (gdb) run
+Starting program: /mnt/c/Users/user/Desktop/bomb002/bomb
+Welcome to my fiendish little bomb. You have 6 phases with
+which to blow yourself up. Have a nice day!
+Public speaking is very easy.
+Phase 1 defused. How about the next one?
+1 2 4 8 16 32
+That's number 2.  Keep going!
+5 4294967244
+Halfway there!
+1 3
+
+Breakpoint 1, 0x000000000040100e in phase_4 ()
+
+
+  
+  
